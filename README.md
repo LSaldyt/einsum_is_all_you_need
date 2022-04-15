@@ -1,2 +1,2 @@
-# tsp
-Simple Travelling Salesman Problem implementations, using classical approaches such as simulated annealing. Use both for class projects in CSE 598: Bio-inspired AI and in my Ph.D. research
+# Einsum is all you need
+A simple functional autodifferentiation library based on einsum. References https://github.com/mattjj/autodidact/ and https://jax.readthedocs.io/en/latest/autodidax.html
