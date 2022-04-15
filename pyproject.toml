@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "einsum_is_all_you_need"
+version = "0.0.0"
+description = "Simple class project showing how to implement autodiff for einstein summations"
+authors = ["LSaldyt <lucassaldyt@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.11"
+numpy = "^1.22.3"
+plotly = "^5.6.0"
+pandas = "^1.4.1"
+settings = {git = "https://github.com/LSaldyt/settings.git", rev = "main"}
+psutil = "^5.9.0"
+requests = "^2.27.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
