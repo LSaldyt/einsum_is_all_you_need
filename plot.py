@@ -18,13 +18,12 @@ def main():
     n = 1000
     x  = linspace(-10, 10, n)
     l = ones_like(x)
-    multiply, multiply_jvps = autodiff_rules['multiply']
-    y, gy = autodiff(multiply, multiply_jvps, l, x, x)
+    func = 'sinh'
+    func, func_jvps = autodiff_rules[func]
+    y, gy = autodiff(func, func_jvps, l, x)
     fig = px.line(x=x, y=y)
     fig.show()
     fig = px.line(x=x, y=gy[0])
-    fig.show()
-    fig = px.line(x=x, y=gy[1])
     fig.show()
 
 if __name__ == '__main__':

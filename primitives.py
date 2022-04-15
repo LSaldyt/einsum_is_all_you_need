@@ -15,35 +15,42 @@ def unbroadcast(target, g, broadcast_idx=0):
     Remove broadcasted dimensions by summing along them.
     When computing gradients of a broadcasted value, this is the right thing to
     do when computing the total derivative and accounting for cloning. '''
-    while ndim(g) > ndim(target):
-        g = sum(g, axis=broadcast_idx)
-    for axis, size in enumerate(shape(target)):
-        if size == 1:
-            g = sum(g, axis=axis, keepdims=True)
-    if iscomplexobj(g) and not iscomplex(target):
-        g = real(g)
     return g
+    # while ndim(g) > ndim(target):
+    #     g = sum(g, axis=broadcast_idx)
+    # for axis, size in enumerate(shape(target)):
+    #     if size == 1:
+    #         g = sum(g, axis=axis, keepdims=True)
+    # if iscomplexobj(g) and not iscomplex(target):
+    #     g = real(g)
+    # return g
 
-''' Differentiation rules from calculus, expressed as Jacobian Vector Products '''
+''' Differentiation rules from calculus, expressed as Jacobian Vector Products
+    Each jvp is a function(l, y, *args)
+    Where
+    l is the incoming gradient
+    y is the output of (f, *args)
+    *args are the standard arguments to f and grad(f)
+'''
 
 autodiff_rules = dict(
-    add         = (lambda y, l, a, b : unbroadcast(a, y),
-                   lambda y, l, a, b : unbroadcast(b, y)),
-    multiply    = (lambda y, l, a, b : unbroadcast(a, b * y),
-                   lambda y, l, a, b : unbroadcast(b, a * y)),
-    subtract    = (lambda y, l, a, b : unbroadcast(a, y),
-                   lambda y, l, a, b : unbroadcast(b, -y)),
-    divide      = (lambda y, l, a, b : unbroadcast(a,   y / b),
-                   lambda y, l, a, b : unbroadcast(b, - y * a / b**2)),
-    true_divide = (lambda y, l, a, b : unbroadcast(a,   y / b),
-                   lambda y, l, a, b : unbroadcast(b, - y * a / b**2)),
-    power       = (lambda y, l, a, b : unbroadcast(a, y * b * a ** where(b, b - 1, 1.)),
-                   lambda y, l, a, b : unbroadcast(b, y * log(where(a, a, 1.)) * a ** y)),
-    negative    = (lambda y, l, x: -y,),
-    exp         = (lambda y, l, a: l * y,),
-    log         = (lambda y, l, a: y / a,),
-    tanh        = (lambda y, l, a: y / cosh(a) **2,),
-    sinh        = (lambda y, l, a: y * cosh(a),),
-    cosh        = (lambda y, l, a: y * sinh(a),)
+    add         = (lambda l, y, a, b : unbroadcast(a, l),
+                   lambda l, y, a, b : unbroadcast(b, l)),
+    multiply    = (lambda l, y, a, b : unbroadcast(a, b * l),
+                   lambda l, y, a, b : unbroadcast(b, a * l)),
+    subtract    = (lambda l, y, a, b : unbroadcast(a, l),
+                   lambda l, y, a, b : unbroadcast(b, -l)),
+    divide      = (lambda l, y, a, b : unbroadcast(a,   l / b),
+                   lambda l, y, a, b : unbroadcast(b, - l * a / b**2)),
+    true_divide = (lambda l, y, a, b : unbroadcast(a,   l / b),
+                   lambda l, y, a, b : unbroadcast(b, - l * a / b**2)),
+    power       = (lambda l, y, a, b : unbroadcast(a, l * b * a ** where(b, b - 1, 1.)),
+                   lambda l, y, a, b : unbroadcast(b, l * log(where(a, a, 1.)) * a ** l)),
+    negative    = (lambda l, y, x: -l,),
+    exp         = (lambda l, y, a: l * l,),
+    log         = (lambda l, y, a: l / a,),
+    tanh        = (lambda l, y, a: l / cosh(a) **2,),
+    sinh        = (lambda l, y, a: l * cosh(a),),
+    cosh        = (lambda l, y, a: l * sinh(a),)
 )
 autodiff_rules = {k : (getattr(np, k), jvps) for k, jvps in autodiff_rules.items()}

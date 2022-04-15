@@ -6,9 +6,8 @@ def autodiff(f, jvps, l, *args):
         *args : remaining arguments for f and grad(f)
         '''
     y = f(*args) # Compute normal function
-    grads = tuple(jvp(y, l, *args) for jvp in jvps)
+    grads = tuple(jvp(l, y, *args) for jvp in jvps)
     return y, grads
 
 def backpropogate(structure, l):
-    ''' TODO '''
     raise NotImplementedError
