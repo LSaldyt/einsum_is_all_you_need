@@ -26,7 +26,7 @@ class ES:
         self.op      = op
         self.grad_op = reorder(op)
 
-    def __call__(self, w, x, l):
+    def __call__(self, l, w, x):
         y    = es(self.op, w, x)
         grad = es(self.grad_op, l, x)
         return y, grad

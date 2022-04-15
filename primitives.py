@@ -10,17 +10,6 @@ Otherwise, just simple high-school derivative rules:
 https://robert-dolan.grad.uconn.edu/wp-content/uploads/sites/1419/2016/06/Derivatives-Cheat-Sheet.pdf
 '''
 
-def autodiff(f, jvps, l, *args):
-    ''' Simple functional autodifferentiation:
-        f     : any function, such as np.add
-        jvps  : the Jacobian vector products for f as a tuple of functions
-        l     : incoming gradient (l for "loss")
-        *args : remaining arguments for f and grad(f)
-        '''
-    y = f(*args) # Compute normal function
-    grads = tuple(jvp(y, l, *args) for jvp in jvps)
-    return y, grads
-
 def unbroadcast(target, g, broadcast_idx=0):
     ''' This function is from https://github.com/mattjj/autodidact/!
     Remove broadcasted dimensions by summing along them.

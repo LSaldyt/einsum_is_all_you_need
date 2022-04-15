@@ -1,11 +1,11 @@
 from numpy import *
 from numpy import array       as ar
-from numpy import einsum      as es
 from numpy import squeeze     as sz
 from numpy import expand_dims as ed
 
 from einsum     import *
 from primitives import *
+from autodiff   import *
 
 # def sigmoid(x):
 #     return 1 / (1 + exp(-x))
@@ -15,20 +15,24 @@ from primitives import *
 #     loss   = 'bce'
 
 def main():
-    x = ar([[2., 2.],
-            [2., 2.]])
-    w = ar([[1., 0.],
-            [0., 1.]])
+    # x = ar([[2., 2.],
+    #         [2., 2.]])
+    # w = ar([[1., 0.],
+    #         [0., 1.]])
+    # x = ar([2.])
+    x = linspace(-10, 10)
     l = ones_like(x)
 
-    add, add_jvps = autodiff_rules['add']
-    y, gy = autodiff(add, add_jvps, l, x, w)
+    multiply, multiply_jvps = autodiff_rules['multiply']
+    y, gy0 = autodiff(multiply, multiply_jvps, l, x, x)
     print(y)
-    print(gy)
-    # def autodiff(f, jvps, l, *args):
+    print(gy0)
+    # y, gy1 = autodiff(multiply, multiply_jvps, gy0, y, w)
+    # print(y)
+    # print(gy1)
 
     # mult = ES('ij,jk->ik')
-    # y, gy = mult(w, x, l)
+    # y, gy = mult(l, w, x)
 
     # print(w)
     # print(y)
