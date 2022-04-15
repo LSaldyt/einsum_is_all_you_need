@@ -21,43 +21,42 @@ def reorder(op):
     a, b, out = split(op)
     return make((out, b, a))
 
-def value_and_grad(op, w, x, yt=None):
-    ''' Run a forward and a backward pass for op '''
-    y    = es(op, w, x)
-    yt = ones_like(y) if yt is None else yt
-    grad = es(reorder(op), yt, x)
-    return y, grad
+class Node:
+    def __call__(self, *args):
+        raise NotImplementedError
+    def grad(self, *args):
+        raise NotImplementedError
 
-def sigmoid(x):
-    return 1 / (1 + exp(-x))
+class ES:
+    def __init__(self, op):
+        self.op      = op
+        self.grad_op = reorder(op)
 
-'''
-f/g
-->
-0 * g - 1 * g'
---------------
-g^2
+    def __call__(self, w, x, loss):
+        y    = es(self.op, w, x)
+        l    = loss(y)
+        grad = es(self.grad_op, l, x)
+        return y, l, grad
 
-g' = -exp(-x)
-g^2 = 1/(1+exp(-x))**2
-
-so d_sigmoid
-=
--exp(-x)
---------------
-1/(1+exp(-x))**2
-
-Much easier to do via autodiff :)
-'''
+# def sigmoid(x):
+#     return 1 / (1 + exp(-x))
+#
+# def mynetwork(x):
+#     layers = ['ij,jk->ik', 'ik->', 'sig']
+#     loss   = 'bce'
 
 def main():
     x = ar([[2., 2.], [2., 2.]])
     w = ar([[1., 0.], [0., 1.]])
-    y, gy = value_and_grad('ij,jk->ik', w, x)
+
+    mult = ES('ij,jk->ik')
+    loss = lambda y : ones_like(y)
+    y, l, gy = mult(w, x, loss)
+
     print(w)
     print(y)
+    print(l)
     print(gy)
-    print(sigmoid(y))
     # α = 3e-4
     # w -= α * gy
     # print(w)
