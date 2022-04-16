@@ -18,15 +18,15 @@ def make(op):
 
 def reorder(op):
     ''' Reorder a einstein summation to calculate the gradient '''
-    a, b, out = split(op)
-    return make((out, b, a))
+    *first, out = split(op)
+    return make((out, *reversed(first)))
 
 class ES:
     def __init__(self, op):
         self.op      = op
         self.grad_op = reorder(op)
 
-    def __call__(self, l, w, x):
-        y    = es(self.op, w, x)
-        grad = es(self.grad_op, l, x)
+    def __call__(self, l, *a):
+        y    = es(self.op, *a)
+        grad = es(self.grad_op, l, a[-1])
         return y, grad
