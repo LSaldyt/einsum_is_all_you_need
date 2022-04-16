@@ -2,6 +2,8 @@ import plotly.graph_objects as go
 import plotly
 from subprocess import call
 
+import white_theme
+
 QUAL_COLORS = plotly.colors.qualitative.G10 + plotly.colors.qualitative.Dark24 + plotly.colors.qualitative.Light24
 DASH = ['dot', 'dash']
 
