@@ -5,14 +5,9 @@ def trace(f):
     ''' Use the Tracer object (below) to build up the differentiable graph '''
     sig = signature(f)
     l = len(sig.parameters)
-    inx = Tracer()
-    out = f(*(inx,) * l)
+    inx = tuple(Tracer({'input' : i}) for i in range(l))
+    out = f(*inx)
     return out
-
-class Input:
-    ''' Placeholder class indicating the input argument i '''
-    def __init__(self, i=0):
-        self.i = i
 
 class Tracer:
     ''' Class that acts like an ndarray but instead builds up the differentiable
@@ -68,3 +63,8 @@ log  = _unary('log')
 tanh = _unary('tanh')
 sinh = _unary('sinh')
 cosh = _unary('cosh')
+
+def es(op, *args):
+    ''' Trace function for einstein summation
+        Assume only uses tensors, not scalars '''
+    return Tracer({'einsum' : (op, *(a.topology for a in args))})

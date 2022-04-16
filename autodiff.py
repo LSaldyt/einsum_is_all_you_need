@@ -25,19 +25,23 @@ def backprop(topology, in_grad, args):
     assert len(items) == 1, 'For now :)'
     name, arg_tracers = list(items)[0]
     if name == 'input': # Recurse to base case, pass input and grad from inputs
-        return args, in_grad
+        return args[arg_tracers], in_grad
+    elif name == 'einsum':
+        spec, *arg_tracers = arg_tracers
+    # Recursively apply backprop to incoming items
+    # Ex: {multiply : (a, b)} will call backprop on a and b
+    inputs, grads = zip(*(backprop(arg_tracer, in_grad, args)
+                          for arg_tracer in arg_tracers))
+    if name == 'einsum':
+        current_args = (spec,) + inputs
     else:
-        # Recursively apply backprop to incoming items
-        # Ex: {multiply : (a, b)} will call backprop on a and b
-        inputs, grads = zip(*(backprop(arg_tracer, in_grad, args)
-                              for arg_tracer in arg_tracers))
-        # Sum the gradients and return them (requires multiple evals)
-        all_grads = []
-        for i, (inp, prev_grad) in enumerate(zip(inputs, grads)):
-            y, grad = autodiff(name, i, prev_grad, inputs)
-            all_grads.append(grad)
-        # print(*(b.shape for b in all_grads))
-        final_grad = np.sum(all_grads, axis=0)
-        return y, final_grad
+        current_args = inputs
+    # Sum the gradients and return them (requires multiple evals)
+    all_grads = []
+    for i, (inp, prev_grad) in enumerate(zip(inputs, grads)):
+        y, grad = autodiff(name, i, prev_grad, current_args)
+        all_grads.append(grad)
+    final_grad = np.sum(all_grads, axis=0)
+    return y, final_grad
 
 

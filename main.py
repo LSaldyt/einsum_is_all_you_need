@@ -15,18 +15,21 @@ from tracer     import *
 def sigmoid(x):
     return 1 / (1 + exp(-x))
 
-def test(x):
-    # return x**2 + x**2
-    return 1 / (1 + exp(-x))
+def test(w, x):
+    h = es('ij,jk->ik', w, x)
+    return 1 / (1 + exp(-h))
 
 def main():
     sig_trace = trace(sigmoid)
     pprint(sig_trace.topology)
+    y, gy = backprop(sig_trace, ar([1.]), (ar([1.]),))
+
     test_trace = trace(test)
     pprint(test_trace.topology)
-
-    y, gy = backprop(sig_trace, ar([1.]), ar([1.]))
-    1/0
+    x = ar([[1., 0.], [0., 0.]])
+    w = ar([[1., 0.], [0., 0.]])
+    y, gy = backprop(test_trace, np.ones_like(x), (w, x))
+    print(y, gy)
 
     # x = ar([[2., 2.],
     #         [2., 2.]])

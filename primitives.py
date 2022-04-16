@@ -1,4 +1,5 @@
-import numpy as np
+import numpy  as np
+import einsum as einsum
 
 '''
 Primarily based on
@@ -41,6 +42,7 @@ autodiff_rules = dict(
     log         = (lambda l, y, a: l / a,),
     tanh        = (lambda l, y, a: l / np.cosh(a) **2,),
     sinh        = (lambda l, y, a: l * np.cosh(a),),
-    cosh        = (lambda l, y, a: l * np.sinh(a),)
+    cosh        = (lambda l, y, a: l * np.sinh(a),),
+    einsum      = (einsum.jacobian_vector_product,) * 2
 )
 autodiff_rules = {k : (getattr(np, k), jvps) for k, jvps in autodiff_rules.items()}

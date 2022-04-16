@@ -31,8 +31,9 @@ def main():
     n = 1000
     x = np.linspace(-10, 10, n)
     l = np.ones_like(x)
-    y, gy = backprop(test_trace, l, x)
+    y, gy = backprop(test_trace, l, (x,))
 
+    print(y)
     print(gy)
 
     fig = px.line(x=x, y=y)

@@ -21,12 +21,8 @@ def reorder(op):
     *first, out = split(op)
     return make((out, *reversed(first)))
 
-class ES:
-    def __init__(self, op):
-        self.op      = op
-        self.grad_op = reorder(op)
-
-    def __call__(self, l, *a):
-        y    = es(self.op, *a)
-        grad = es(self.grad_op, l, a[-1])
-        return y, grad
+def jacobian_vector_product(l, y, op, *a):
+    grad_op = reorder(op)
+    y       = es(op, *a)
+    grad    = es(grad_op, l, a[-1])
+    return grad
