@@ -5,20 +5,23 @@ from numpy import squeeze     as sz
 from numpy import expand_dims as ed
 
 # from einsum     import *
-# from primitives import *
-# from autodiff   import *
+from primitives import *
+from autodiff   import autodiff, apply, backprop
 from tracer     import *
-
-# def apply(name, *args):
-#     func, func_jvps = autodiff_rules[name]
-#     return autodiff(func, func_jvps, *args)
 
 def sigmoid(x):
     return 1 / (1 + exp(-x))
 
+def test(x):
+    return x**2 + x**2
+
 def main():
     sig_trace = trace(sigmoid)
-    pprint(sig_trace)
+    pprint(sig_trace.topology)
+    test_trace = trace(test)
+    pprint(test_trace.topology)
+    backprop(sig_trace, ar([1.]), ar([1.]))
+    1/0
 
     # x = ar([[2., 2.],
     #         [2., 2.]])

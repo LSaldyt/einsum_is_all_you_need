@@ -1,5 +1,4 @@
 import numpy as np
-from numpy import *
 
 '''
 Primarily based on
@@ -13,18 +12,19 @@ Otherwise, just simple high-school derivative rules:
 https://robert-dolan.grad.uconn.edu/wp-content/uploads/sites/1419/2016/06/Derivatives-Cheat-Sheet.pdf
 '''
 
+
 def unbroadcast(target, g, broadcast_idx=0):
     ''' This function is from https://github.com/mattjj/autodidact/!
     Remove broadcasted dimensions by summing along them.
     When computing gradients of a broadcasted value, this is the right thing to
     do when computing the total derivative and accounting for cloning. '''
-    while ndim(g) > ndim(target):
-        g = sum(g, axis=broadcast_idx)
-    for axis, size in enumerate(shape(target)):
+    while np.ndim(g) > np.ndim(target):
+        g = np.sum(g, axis=broadcast_idx)
+    for axis, size in enumerate(np.shape(target)):
         if size == 1:
-            g = sum(g, axis=axis, keepdims=True)
-    if iscomplexobj(g) and not iscomplex(target):
-        g = real(g)
+            g = np.sum(g, axis=axis, keepdims=True)
+    if np.iscomplexobj(g) and not np.iscomplex(target):
+        g = np.real(g)
     return g
 
 ''' Differentiation rules from calculus, expressed as Jacobian Vector Products
@@ -33,6 +33,8 @@ def unbroadcast(target, g, broadcast_idx=0):
     l is the incoming gradient
     y is the output of (f, *args)
     *args are the standard arguments to f and grad(f)
+
+    If we wanted to allow taking multiple gradients, we would replace np.where and np.log with our versions of log, where, and so on.
 '''
 
 autodiff_rules = dict(
@@ -46,13 +48,13 @@ autodiff_rules = dict(
                    lambda l, y, a, b : unbroadcast(b, - l * a / b**2)),
     true_divide = (lambda l, y, a, b : unbroadcast(a,   l / b),
                    lambda l, y, a, b : unbroadcast(b, - l * a / b**2)),
-    power       = (lambda l, y, a, b : unbroadcast(a, l * b * a ** where(b, b - 1, 1.)),
-                   lambda l, y, a, b : unbroadcast(b, l * log(where(a, a, 1.)) * a ** l)),
+    power       = (lambda l, y, a, b : unbroadcast(a, l * b * a ** np.where(b, b - 1, 1.)),
+                   lambda l, y, a, b : unbroadcast(b, l * np.log(np.where(a, a, 1.)) * a ** l)),
     negative    = (lambda l, y, x: -l,),
     exp         = (lambda l, y, a: l * l,),
     log         = (lambda l, y, a: l / a,),
-    tanh        = (lambda l, y, a: l / cosh(a) **2,),
-    sinh        = (lambda l, y, a: l * cosh(a),),
-    cosh        = (lambda l, y, a: l * sinh(a),)
+    tanh        = (lambda l, y, a: l / np.cosh(a) **2,),
+    sinh        = (lambda l, y, a: l * np.cosh(a),),
+    cosh        = (lambda l, y, a: l * np.sinh(a),)
 )
 autodiff_rules = {k : (getattr(np, k), jvps) for k, jvps in autodiff_rules.items()}

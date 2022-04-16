@@ -3,34 +3,43 @@ from inspect    import signature
 
 def trace(f):
     ''' Use the Tracer object (below) to build up the differentiable graph '''
-    inx = Tracer()
     sig = signature(f)
-    out = f(*(inx,) * len(sig.parameters))
-    return out.topology
+    l = len(sig.parameters)
+    inx = Tracer()
+    out = f(*(inx,) * l)
+    return out
+
+class Input:
+    ''' Placeholder class indicating the input argument i '''
+    def __init__(self, i=0):
+        self.i = i
 
 class Tracer:
     ''' Class that acts like an ndarray but instead builds up the differentiable
         graph of operations '''
     def __init__(self, topology=None):
         if topology is None:
-            self.topology = dict()
+            self.topology = {'input' : Input()}
         else:
             self.topology = topology
 
+    def split(self, name, new):
+        return Tracer({name : new})
+
     def lbinary(self, name, other):
         if isinstance(other, Tracer):
-            return Tracer({name : (self.topology, other.topology)})
+            return self.split(name, (self.topology, other.topology))
         else:
-            return Tracer({name : (self.topology, other)})
+            return self.split(name, (self.topology, other))
 
     def rbinary(self, name, other):
         if isinstance(other, Tracer):
-            return Tracer({name : (other.topology, self.topology)})
+            return self.split(name, (other.topology, self.topology))
         else:
-            return Tracer({name : (other, self.topology)})
+            return self.split(name, (other, self.topology))
 
     def unary(self, name):
-        return Tracer({name : (self.topology,)})
+        return self.split(name, (self.topology,))
 
     def __abs__(self):             return self.unary('abs')
     def __neg__(self):             return self.unary('negative')
@@ -51,8 +60,7 @@ class Tracer:
 
 def _unary(name):
     def inner(t):
-        t.topology = {name : t.topology}
-        return t
+        return t.split(name, (t.topology,))
     return inner
 
 exp  = _unary('exp')
