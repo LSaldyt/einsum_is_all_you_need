@@ -2,26 +2,24 @@ import numpy  as np
 import einsum as einsum
 
 '''
+Differentiation rules from calculus, expressed as Jacobian Vector Products
+    Each jvp is a function(l, y, *args)
+    Where:
+        l is the incoming gradient
+        y is the output of (f, *args)
+        *args are the standard arguments to f and grad(f)
+If we wanted to allow taking multiple gradients, we would replace np.where and np.log with our versions of log, where, and so on.
+
 Primarily based on
 https://www.cs.toronto.edu/~rgrosse/courses/csc321_2018/slides/lec10.pdf
 Which in turn is based on https://github.com/mattjj/autodidact
 Especially
 https://github.com/mattjj/autodidact/blob/master/autograd/numpy/numpy_vjps.py
+Note that I have made several simplifications/fixes relative to the autodidact jvps & tracing
 Also referenced:
 https://jax.readthedocs.io/en/latest/autodidax.html
 Otherwise, just simple high-school derivative rules:
 https://robert-dolan.grad.uconn.edu/wp-content/uploads/sites/1419/2016/06/Derivatives-Cheat-Sheet.pdf
-'''
-
-
-''' Differentiation rules from calculus, expressed as Jacobian Vector Products
-    Each jvp is a function(l, y, *args)
-    Where
-    l is the incoming gradient
-    y is the output of (f, *args)
-    *args are the standard arguments to f and grad(f)
-
-    If we wanted to allow taking multiple gradients, we would replace np.where and np.log with our versions of log, where, and so on.
 '''
 
 autodiff_rules = dict(

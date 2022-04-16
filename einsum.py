@@ -4,7 +4,7 @@ from numpy import einsum      as es
 from numpy import squeeze     as sz
 from numpy import expand_dims as ed
 
-''' We define autodifferentiation purely on einsum and activations '''
+''' Define autodifferentiation purely on einsum and activations '''
 
 def split(op):
     ''' Split an einstein summation into inputs and outputs '''
@@ -22,6 +22,9 @@ def reorder(op):
     return make((out, *reversed(first)))
 
 def jacobian_vector_product(l, y, op, *a):
+    ''' Differentiating an einstein sum is deceptively simple: just re-order the arguments in many cases!
+        Still needs to account for some edge cases, such as reducing summations like "ii->"
+        Also needs to handle triple-tensor operations (if desired) '''
     grad_op = reorder(op)
     y       = es(op, *a)
     grad    = es(grad_op, l, a[-1])

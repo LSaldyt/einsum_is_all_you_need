@@ -33,7 +33,7 @@ def backprop(topology, in_grad, args):
     inputs, grads = zip(*(backprop(arg_tracer, in_grad, args)
                           for arg_tracer in arg_tracers))
     if name == 'einsum':
-        current_args = (spec,) + inputs
+        current_args = (spec,) + inputs # Small hack to pass around einsum str
     else:
         current_args = inputs
     # Sum the gradients and return them (requires multiple evals)
