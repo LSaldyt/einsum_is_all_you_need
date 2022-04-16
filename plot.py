@@ -24,18 +24,11 @@ def sigmoid(x):
 def test(x):
     return 1 / (1 + exp(-x))
 
-def test(x):
-    # return x**2 + x**2
-    # return exp(x)
-    return x**2
-    # return sinh(x)
-    # return x + 2
-
 def main():
     test_trace = trace(test)
     pprint(test_trace.topology)
 
-    n = 10
+    n = 1000
     x = np.linspace(-10, 10, n)
     l = np.ones_like(x)
     y, gy = backprop(test_trace, l, x)

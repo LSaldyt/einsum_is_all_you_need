@@ -16,11 +16,11 @@ def autodiff(name, i, l, args):
     return y, grad
 
 def backprop(topology, in_grad, args):
-    print('Backprop:', topology, )#in_grad, args)
+    print('Backprop:', topology)
     if isinstance(topology, Tracer):
         topology = topology.topology
     if not isinstance(topology, dict): # Currently implies a constant
-        return topology, np.array([1.])
+        return topology, np.array([0.]) # Constant rule
     items = topology.items()
     assert len(items) == 1, 'For now :)'
     name, arg_tracers = list(items)[0]
@@ -28,9 +28,10 @@ def backprop(topology, in_grad, args):
         return args, in_grad
     else:
         # Recursively apply backprop to incoming items
-        # Ex: {multiply : (a, b)}
+        # Ex: {multiply : (a, b)} will call backprop on a and b
         inputs, grads = zip(*(backprop(arg_tracer, in_grad, args)
                               for arg_tracer in arg_tracers))
+        # Sum the gradients and return them (requires multiple evals)
         all_grads = []
         for i, (inp, prev_grad) in enumerate(zip(inputs, grads)):
             y, grad = autodiff(name, i, prev_grad, inputs)

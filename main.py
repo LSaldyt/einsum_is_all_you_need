@@ -16,7 +16,8 @@ def sigmoid(x):
     return 1 / (1 + exp(-x))
 
 def test(x):
-    return x**2 + x**2
+    # return x**2 + x**2
+    return 1 / (1 + exp(-x))
 
 def main():
     sig_trace = trace(sigmoid)
