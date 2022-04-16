@@ -1,13 +1,16 @@
 from pprint import pprint
 
+import numpy as np
+np.seterr(all='raise')
 from numpy import array       as ar
 from numpy import squeeze     as sz
 from numpy import expand_dims as ed
 
 # from einsum     import *
 from primitives import *
-from autodiff   import autodiff, apply, backprop
+from autodiff   import autodiff, backprop
 from tracer     import *
+
 
 def sigmoid(x):
     return 1 / (1 + exp(-x))
@@ -20,7 +23,8 @@ def main():
     pprint(sig_trace.topology)
     test_trace = trace(test)
     pprint(test_trace.topology)
-    backprop(sig_trace, ar([1.]), ar([1.]))
+
+    y, gy = backprop(sig_trace, ar([1.]), ar([1.]))
     1/0
 
     # x = ar([[2., 2.],
@@ -36,7 +40,6 @@ def main():
     # mult = ES('ij,jk->ik')
     # y, gy = mult(l, w, x)
     # y, gy = mean_squared_error(gy, y)
-    # y, gy = apply('subtract', gy[0], y, yt)
     # print(y)
 
     # # print(gy)

@@ -37,6 +37,11 @@ def unbroadcast(target, g, broadcast_idx=0):
     If we wanted to allow taking multiple gradients, we would replace np.where and np.log with our versions of log, where, and so on.
 '''
 
+def power_jnp_debug(l, y, a, b):
+    pre = np.where(a>0, a, 1.)
+    mid = np.log(pre)
+    return unbroadcast(b, l * mid * a ** b)
+
 autodiff_rules = dict(
     add         = (lambda l, y, a, b : unbroadcast(a, l),
                    lambda l, y, a, b : unbroadcast(b, l)),
@@ -49,9 +54,10 @@ autodiff_rules = dict(
     true_divide = (lambda l, y, a, b : unbroadcast(a,   l / b),
                    lambda l, y, a, b : unbroadcast(b, - l * a / b**2)),
     power       = (lambda l, y, a, b : unbroadcast(a, l * b * a ** np.where(b, b - 1, 1.)),
-                   lambda l, y, a, b : unbroadcast(b, l * np.log(np.where(a, a, 1.)) * a ** l)),
+                   power_jnp_debug),
+                   # lambda l, y, a, b : unbroadcast(b, l * np.log(np.where(a, a, 1.)) * a ** b)),
     negative    = (lambda l, y, x: -l,),
-    exp         = (lambda l, y, a: l * l,),
+    exp         = (lambda l, y, a: y * l,),
     log         = (lambda l, y, a: l / a,),
     tanh        = (lambda l, y, a: l / np.cosh(a) **2,),
     sinh        = (lambda l, y, a: l * np.cosh(a),),
