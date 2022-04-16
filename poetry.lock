@@ -1,22 +1,4 @@
 [[package]]
-name = "autodidact"
-version = "0.1.0"
-description = "Autodidact: a pedagogical implementation of Autograd"
-category = "main"
-optional = false
-python-versions = "^3.10"
-develop = false
-
-[package.dependencies]
-numpy = "^1.22.3"
-
-[package.source]
-type = "git"
-url = "https://github.com/LSaldyt/autodidact.git"
-reference = "master"
-resolved_reference = "a94070f75345c994b3af7ad2ecb31bd6307bf15c"
-
-[[package]]
 name = "certifi"
 version = "2021.10.8"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -177,10 +159,9 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.10,<3.11"
-content-hash = "edb5f2042b47dc65e7bad13497c43a659f0acd8946f889a0757e09862f1580ed"
+content-hash = "6f4ba0a94793b988600e5986c5f145f85db4b166405d93a00b95b2eea52408c7"
 
 [metadata.files]
-autodidact = []
 certifi = [
     {file = "certifi-2021.10.8-py2.py3-none-any.whl", hash = "sha256:d62a0163eb4c2344ac042ab2bdf75399a71a2d8c7d47eac2e2ee91b9d6339569"},
     {file = "certifi-2021.10.8.tar.gz", hash = "sha256:78884e7c1d4b00ce3cea67b44566851c4343c120abd683433ce934a68ea58872"},

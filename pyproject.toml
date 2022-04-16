@@ -13,7 +13,6 @@ pandas = "^1.4.1"
 settings = {git = "https://github.com/LSaldyt/settings.git", rev = "main"}
 psutil = "^5.9.0"
 requests = "^2.27.1"
-autodidact = {git = "https://github.com/LSaldyt/autodidact.git"}
 
 [tool.poetry.dev-dependencies]
 
